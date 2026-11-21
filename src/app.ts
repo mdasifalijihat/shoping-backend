@@ -1,25 +1,27 @@
-import express, { Application, Request, Response } from "express";
+﻿import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
+import express from "express";
+import helmet from "helmet";
+import { auth } from "./app/config/auth.js";
+import { env } from "./app/config/index.js";
+import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
+import notFound from "./app/middlewares/notFound.js";
+import router from "./app/routes/index.js";
 
-const app: Application = express();
+const app = express();
 
-// CORS Middleware
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Built-in middleware
+app.use(helmet());
+app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check route
-app.get("/", (req: Request, res: Response) => {
+app.get(["/", "/health"], (_req, res) => {
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
 });
+
+app.use("/api/v1", router);
+app.use(notFound);
+app.use(globalErrorHandler);
 
 export default app;

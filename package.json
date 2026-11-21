@@ -11,11 +11,12 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "push": "prisma db push",
-    "studio": "prisma studio",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "generate": "prisma generate --config prisma7.config.ts",
+    "migrate": "prisma migrate dev --config prisma7.config.ts",
+    "push": "prisma db push --config prisma7.config.ts",
+    "studio": "prisma studio --config prisma7.config.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -33,14 +34,19 @@
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "better-auth": "^1.7.27",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.5.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
     "@types/node": "^26.6.6",
     "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^10.15.0",
