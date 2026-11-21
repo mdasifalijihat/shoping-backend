@@ -1,0 +1,69 @@
+model Category {
+    id          String  @id @default(cuid())
+    name        String
+    slug        String  @unique
+    description String?
+    iconUrl     String?
+    bannerUrl   String?
+    orderIndex  Int     @default(0)
+    isFeatured  Boolean @default(false)
+    isActive    Boolean @default(true)
+
+    // Unlimited Nested Sub-Categories
+    parentId String?
+    parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+    children Category[] @relation("CategoryHierarchy")
+
+    products Product[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("categories")
+}
+
+// অ্যাডমিন প্যানেল থেকে কাস্টম অ্যাট্রিবিউট টেমপ্লেট তৈরি (যেমন: Size, Color, Weight, Warranty)
+model Attribute {
+    id        String   @id @default(cuid())
+    name      String   @unique // যেমন: "Color", "Size", "Storage"
+    values    String[] // যেমন: ["Red", "Blue"] অথবা ["S", "M", "L", "XL"]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("attributes")
+}
+
+model Product {
+    id            String   @id @default(cuid())
+    title         String
+    slug          String   @unique
+    description   String   @db.Text
+    basePrice     Float
+    discountPrice Float?
+    sku           String?  @unique
+    stock         Int      @default(0)
+    thumbnail     String
+    images        String[] // একাধিক গ্যালারি ইমেজ URL
+
+    // ১০০% কাস্টম অ্যাট্রিবিউট ও ভ্যারিয়েন্ট JSONB ফিল্ড
+    // customAttributes উদাহরণ: { "Fabric": "Cotton", "Warranty": "1 Year" }
+    customAttributes Json @default("{}")
+
+    // variants উদাহরণ: [{ "sku": "TS-RED-L", "attributes": {"Color": "Red", "Size": "L"}, "price": 550, "stock": 10 }]
+    variants Json @default("[]")
+
+    isFeatured Boolean @default(false)
+    isActive   Boolean @default(true)
+
+    categoryId String
+    category   Category @relation(fields: [categoryId], references: [id])
+
+    cartItems  CartItem[]
+    orderItems OrderItem[]
+    reviews    Review[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("products")
+}

@@ -1,0 +1,41 @@
+model PaymentMethod {
+    id            String  @id @default(cuid())
+    name          String // যেমন: "bKash Personal", "Nagad Merchant", "Cash on Delivery", "Bank Transfer"
+    slug          String  @unique
+    logoUrl       String?
+    accountNumber String? // মার্চেন্ট বা পার্সোনাল নম্বর
+    instructions  String? @db.Text // পেমেন্ট করার নিয়মাবলি
+
+    // অ্যাডমিন থেকে তৈরি করা ডাইনামিক চেকআউট ইনপুট ফিল্ড স্কিমা:
+    // উদাহরণ: [
+    //   { "name": "senderNumber", "label": "Sender Number", "type": "text", "placeholder": "017xxxxxxxx", "required": true },
+    //   { "name": "trxId", "label": "Transaction ID", "type": "text", "placeholder": "8N7A6D5...", "required": true },
+    //   { "name": "screenshot", "label": "Payment Screenshot", "type": "file", "required": false }
+    // ]
+    customFieldsSchema Json @default("[]")
+
+    orderIndex Int     @default(0)
+    isActive   Boolean @default(true)
+
+    orders Order[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("payment_methods")
+}
+
+model ShippingZone {
+    id         String  @id @default(cuid())
+    name       String // যেমন: "Inside Dhaka", "Outside Dhaka", "Express Delivery"
+    charge     Float
+    isActive   Boolean @default(true)
+    orderIndex Int     @default(0)
+
+    orders Order[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("shipping_zones")
+}

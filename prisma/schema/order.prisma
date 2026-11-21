@@ -1,0 +1,121 @@
+model Cart {
+    id        String     @id @default(cuid())
+    userId    String     @unique
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    items     CartItem[]
+    updatedAt DateTime   @updatedAt
+
+    @@map("carts")
+}
+
+model CartItem {
+    id              String  @id @default(cuid())
+    cartId          String
+    cart            Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    productId       String
+    product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    quantity        Int     @default(1)
+    selectedVariant Json? // কাস্টমার যে ভ্যারিয়েন্ট সিলেক্ট করেছে (যেমন: {"Color": "Red", "Size": "L"})
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("cart_items")
+}
+
+model Coupon {
+    id             String       @id @default(cuid())
+    code           String       @unique
+    discountType   DiscountType
+    discountValue  Float
+    minOrderAmount Float?       @default(0)
+    maxDiscount    Float?
+    usageLimit     Int?
+    usedCount      Int          @default(0)
+    expiresAt      DateTime?
+    isActive       Boolean      @default(true)
+
+    orders Order[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("coupons")
+}
+
+model Order {
+    id          String @id @default(cuid())
+    orderNumber String @unique // যেমন: "ORD-20261121-001"
+
+    userId String?
+    user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+    // Customer Shipping Details (Guest বা Logged-in উভয়ের জন্য)
+    customerName    String
+    customerPhone   String
+    customerEmail   String?
+    shippingAddress String  @db.Text
+    orderNote       String?
+
+    // Pricing Breakdown
+    subTotal       Float
+    shippingCharge Float
+    discountAmount Float @default(0)
+    totalAmount    Float
+
+    // Dynamic Payment & Shipping Links
+    paymentMethodId String
+    paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+    // কাস্টমার চেকআউটে customFieldsSchema অনুযায়ী যে ডাটা সাবমিট করবে:
+    // উদাহরণ: { "senderNumber": "01711...", "trxId": "9X8Y7Z", "screenshot": "https://..." }
+    paymentData Json @default("{}")
+
+    shippingZoneId String?
+    shippingZone   ShippingZone? @relation(fields: [shippingZoneId], references: [id])
+
+    couponId String?
+    coupon   Coupon? @relation(fields: [couponId], references: [id])
+
+    orderStatus   OrderStatus   @default(PENDING)
+    paymentStatus PaymentStatus @default(UNPAID)
+
+    items OrderItem[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("orders")
+}
+
+model OrderItem {
+    id        String  @id @default(cuid())
+    orderId   String
+    order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
+
+    productTitle    String // অর্ডার করার সময় প্রোডাক্টের নাম সংরক্ষণ
+    quantity        Int
+    unitPrice       Float
+    selectedVariant Json? // অর্ডার করা ভ্যারিয়েন্ট (যেমন: {"Color": "Red", "Size": "L"})
+
+    @@map("order_items")
+}
+
+model Review {
+    id         String  @id @default(cuid())
+    rating     Int // 1 to 5
+    comment    String? @db.Text
+    isApproved Boolean @default(true)
+
+    userId    String
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    productId String
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("reviews")
+}

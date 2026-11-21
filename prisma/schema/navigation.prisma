@@ -1,0 +1,57 @@
+model NavbarItem {
+    id         String  @id @default(cuid())
+    title      String
+    url        String? // যেমন: "/category/mens", "/page/about-us" বা external link
+    icon       String?
+    orderIndex Int     @default(0)
+    isActive   Boolean @default(true)
+    openInNew  Boolean @default(false)
+
+    // Nested Sub-menu Self Relation
+    parentId String?
+    parent   NavbarItem?  @relation("NavbarSubMenus", fields: [parentId], references: [id], onDelete: Cascade)
+    children NavbarItem[] @relation("NavbarSubMenus")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("navbar_items")
+}
+
+model HomepageSection {
+    id         String      @id @default(cuid())
+    title      String
+    subtitle   String?
+    type       SectionType
+    orderIndex Int         @default(0)
+    isActive   Boolean     @default(true)
+
+    // সেকশনের সব ডাইনামিক কনফিগ (যেমন: slider images, categoryId, productIds, bgColor)
+    config Json @default("{}")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("homepage_sections")
+}
+
+model CustomPage {
+    id        String   @id @default(cuid())
+    title     String
+    slug      String   @unique
+    content   String   @db.Text
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("custom_pages")
+}
+
+model SiteSetting {
+    id        String   @id @default(cuid())
+    key       String   @unique // যেমন: "GENERAL_INFO", "HEADER_NOTICE", "FOOTER_LINKS", "SOCIAL_LINKS"
+    value     Json // যেকোনো কাস্টম সেটিংস JSON আকারে সেভ হবে
+    updatedAt DateTime @updatedAt
+
+    @@map("site_settings")
+}

@@ -1,0 +1,36 @@
+enum Role {
+    SUPER_ADMIN
+    ADMIN
+    CUSTOMER
+}
+
+enum OrderStatus {
+    PENDING
+    PAYMENT_VERIFIED
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+    RETURNED
+}
+
+enum PaymentStatus {
+    UNPAID
+    PENDING_VERIFICATION
+    PAID
+    FAILED
+    REFUNDED
+}
+
+enum DiscountType {
+    PERCENTAGE
+    FIXED
+}
+
+enum SectionType {
+    HERO_SLIDER
+    BANNER
+    FEATURED_CATEGORIES
+    PRODUCT_COLLECTION
+    CUSTOM_HTML
+}
