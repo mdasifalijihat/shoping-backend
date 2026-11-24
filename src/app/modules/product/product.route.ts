@@ -22,6 +22,12 @@ router.get(
   controller.listAdmin
 );
 router.get(
+  "/admin/:id",
+  adminOnly,
+  validateRequest(validation.byIdSchema),
+  controller.getAdminById
+);
+router.get(
   "/:slug",
   validateRequest(validation.bySlugSchema),
   controller.getBySlug

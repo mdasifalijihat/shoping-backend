@@ -60,7 +60,8 @@ async function seed() {
       }
       if (error.code === "P2002") {
         throw new Error(
-          "SUPER_ADMIN_EMAIL already belongs to an existing user"
+          "SUPER_ADMIN_EMAIL already belongs to an existing user",
+          { cause: error }
         );
       }
     }

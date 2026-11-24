@@ -275,10 +275,45 @@ export async function track(orderNumber: string, customerPhone: string) {
       paymentStatus: true,
       createdAt: true,
       updatedAt: true,
+      subTotal: true,
+      shippingCharge: true,
+      discountAmount: true,
+      totalAmount: true,
+      items: {
+        select: {
+          id: true,
+          productTitle: true,
+          selectedVariant: true,
+          quantity: true,
+          unitPrice: true,
+        },
+        orderBy: { id: "asc" },
+      },
     },
   });
   if (!order) throw new AppError(404, "Order not found");
-  return order;
+  const items = order.items.map(({ selectedVariant, ...item }) => {
+    const variant = jsonObject(selectedVariant) ? selectedVariant : null;
+    const sku = typeof variant?.sku === "string" ? variant.sku : undefined;
+    const attributes = jsonObject(variant?.attributes)
+      ? Object.fromEntries(
+          Object.entries(variant.attributes).filter(
+            ([, value]) =>
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean"
+          )
+        )
+      : undefined;
+    return {
+      ...item,
+      selectedVariant:
+        sku || attributes
+          ? { ...(sku && { sku }), ...(attributes && { attributes }) }
+          : null,
+    };
+  });
+  return { ...order, items };
 }
 
 export async function get(id: string, userId: string, admin: boolean) {

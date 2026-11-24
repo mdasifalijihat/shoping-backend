@@ -49,6 +49,16 @@ export const listAdmin = catchAsync<
   });
 });
 
+export const getAdminById = catchAsync<{ id: string }>(async (req, res) => {
+  const data = await service.getAdminById(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Product retrieved",
+    data,
+  });
+});
+
 export const getBySlug = catchAsync<{ slug: string }>(async (req, res) => {
   const data = await service.getBySlug(req.params.slug);
   sendResponse(res, {

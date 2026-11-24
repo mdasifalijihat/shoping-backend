@@ -120,7 +120,7 @@ export async function requireCategory(id: string) {
 export async function create(data: CreateCategory) {
   if (data.parentId) await requireCategory(data.parentId);
   return prisma.category.create({
-    data: { ...data, slug: slugGenerator(data.name) },
+    data: { ...data, slug: data.slug ?? slugGenerator(data.name) },
   });
 }
 

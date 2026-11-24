@@ -15,6 +15,7 @@ router.post(
   controller.create
 );
 router.get("/", controller.list);
+router.get("/admin/list", adminOnly, controller.listAdmin);
 router.get(
   "/:slug",
   validateRequest(validation.bySlugSchema),

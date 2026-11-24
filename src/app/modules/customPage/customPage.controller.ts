@@ -26,6 +26,16 @@ export const list = catchAsync(async (_req, res) => {
   });
 });
 
+export const listAdmin = catchAsync(async (_req, res) => {
+  const data = await service.listAdmin();
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Pages retrieved",
+    data,
+  });
+});
+
 export const getBySlug = catchAsync<{ slug: string }>(async (req, res) => {
   const data = await service.getBySlug(req.params.slug);
   sendResponse(res, {

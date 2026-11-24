@@ -43,6 +43,7 @@ async function paginate(
         skip: (page - 1) * limit,
         take: limit,
         orderBy: [{ [sortBy]: sortOrder }, { id: "asc" }],
+        include: { category: { select: { id: true, name: true, slug: true } } },
       }),
       prisma.product.count({ where }),
     ],
@@ -88,7 +89,19 @@ export async function list(query: ProductQuery) {
 }
 
 export function listAdmin(query: AdminProductQuery) {
-  return paginate(query, {});
+  return paginate(
+    query,
+    query.categoryId ? { categoryId: query.categoryId } : {}
+  );
+}
+
+export async function getAdminById(id: string) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { category: { select: { id: true, name: true, slug: true } } },
+  });
+  if (!product) throw new AppError(404, "Product not found");
+  return product;
 }
 
 export async function getBySlug(slug: string) {

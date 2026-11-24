@@ -17,6 +17,12 @@ export function list() {
   });
 }
 
+export function listAdmin() {
+  return prisma.customPage.findMany({
+    orderBy: [{ title: "asc" }, { id: "asc" }],
+  });
+}
+
 export async function getBySlug(slug: string) {
   const page = await prisma.customPage.findUnique({
     where: { slug, isActive: true },

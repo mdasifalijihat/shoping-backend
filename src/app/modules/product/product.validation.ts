@@ -65,7 +65,9 @@ const pagination = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-export const listAdminSchema = z.object({ query: pagination });
+export const listAdminSchema = z.object({
+  query: pagination.extend({ categoryId: id.exactOptional() }),
+});
 export const listSchema = z.object({
   query: pagination
     .extend({

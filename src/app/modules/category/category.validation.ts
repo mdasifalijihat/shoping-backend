@@ -6,7 +6,16 @@ const imageUrl = z
   .url({ protocol: /^https?$/ })
   .nullable()
   .exactOptional();
+const slug = z
+  .string()
+  .trim()
+  .regex(
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Use lowercase letters, numbers, and hyphens"
+  )
+  .refine((value) => value !== "admin", "This category slug is reserved");
 const fields = {
+  slug: slug.exactOptional(),
   name: z.string().trim().min(1),
   description: z.string().nullable().exactOptional(),
   iconUrl: imageUrl,

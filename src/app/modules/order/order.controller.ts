@@ -55,6 +55,7 @@ export const track = catchAsync<
   unknown,
   { customerPhone: string }
 >(async (req, res) => {
+  res.set("Cache-Control", "private, no-store");
   const data = await service.track(
     req.params.orderNumber,
     req.query.customerPhone
